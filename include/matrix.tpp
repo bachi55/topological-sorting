@@ -31,29 +31,34 @@ Matrix <T> ::Matrix (uint nrow, uint ncol, const std::vector<T>& data)
 template <class T>
 void Matrix <T> ::printMatrix () {
   
-  std::printf ("Sorry! There is no \'printMatrix\' implementation for type T right now.\n");
+  for (auto i = 0; i < _nrow; i++) {
+    for (auto j = 0; j < _ncol; j++)
+      std::cout << (*this) (i, j) << " ";
+    
+    std::cout << std::endl;
+  }
   
 }
 
-template <class T>
-T& Matrix <T> ::operator() (uint row, uint col) {
-  
-  if ((row > (_nrow - 1)) || (col > (_ncol - 1)))
-    throw std::invalid_argument ("Error: matrix index out of bounce.");
-  
-  return _data[row * _ncol + col];
-  
-}
-
-template <class T>
-const T & Matrix <T> ::operator() (uint row, uint col) const {
-  
-  if ((row > (_nrow - 1)) || (col > (_ncol - 1)))
-    throw std::invalid_argument ("Error: matrix index out of bounce.");
-  
-  return _data[row * _ncol + col];
-  
-}
+// template <class T>
+// T& Matrix <T> ::operator() (uint row, uint col) {
+//   
+//   if ((row > (_nrow - 1)) || (col > (_ncol - 1)))
+//     throw std::invalid_argument ("Error: matrix index out of bounce.");
+//   
+//   return _data[row * _ncol + col];
+//   
+// }
+// 
+// template <class T>
+// const T & Matrix <T> ::operator() (uint row, uint col) const {
+//   
+//   if ((row > (_nrow - 1)) || (col > (_ncol - 1)))
+//     throw std::invalid_argument ("Error: matrix index out of bounce.");
+//   
+//   return _data[row * _ncol + col];
+//   
+// }
 
 
 template <class T>
@@ -108,7 +113,7 @@ void Matrix <T> ::setRow (uint row, std::vector <T> && newData) {
   if ( newData.size() != (_ncol))
     throw std::invalid_argument ("Error: New row does not have the correct size.");
   
-  auto rowData 	    = _data.begin() + ((_ncol) * row);
+  auto rowData = _data.begin() + ((_ncol) * row);
   
   std::move (newData.begin(), newData.end(), rowData);
   

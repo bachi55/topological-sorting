@@ -1,11 +1,13 @@
 //TODO: Come clear about the return type of function for complex objects (for ex. like matrices). 
 // 	Keywords are: const reference, rvalue moving, const access, copies
 //TODO: Come clear about moving-constructor
+//TODO: clean up here!
 
 #ifndef MATRIX_H
 #define MATRIX_H
 
 #include <cstdio>
+#include <iostream>
 #include <utility>
 #include <stdexcept>
 #include <sys/types.h>
@@ -16,9 +18,23 @@
 
 template <class T>
 class Matrix {
+  
+private:
+  // number of rows and columns
   uint _nrow, _ncol;
+  
+  // vector to keep data
   std::vector <T> _data;
+  
   bool _init; 
+  
+  bool withinBounds (uint row, uint col) const { 
+    return ! ((row > (_nrow - 1)) || (col > (_ncol - 1)));
+  }
+  
+  uint getLinearIndex (uint row, uint col) const {
+    return row * _ncol + col;
+  }
   
 public:
   // constructs an not initialized matrix
@@ -37,10 +53,20 @@ public:
   void printMatrix ();
   
   // access operator (e.g. matrix (i,j) = 0 --> lvalue) 
-  T & operator() (uint row, uint col); 
+  typename std::vector <T>::reference operator() (uint row, uint col) {
+    if (! withinBounds (row, col))
+      throw std::invalid_argument ("Error: matrix index out of bounce.");
+    
+    return _data[getLinearIndex (row, col)];
+  } 
   
   // access operator (for access from constant objects)
-  const T & operator() (uint row, uint col) const; 
+  typename std::vector <T>::const_reference operator() (uint row, uint col) const {
+    if (! withinBounds (row, col))
+      throw std::invalid_argument ("Error: matrix index out of bounce.");
+    
+    return _data[getLinearIndex (row, col)];
+  }
   
   // matrix multiplication
   Matrix <T> operator* (const Matrix <T> & rhs);

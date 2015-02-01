@@ -1,10 +1,12 @@
 #include "topological-sort.h"
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <set>
-#include <sstream>
 #include <streambuf>
+#include <sstream>
+
 
 std::vector <size_t> topologicalSort (Graph dag) {
   // check whether the given matrix can be an adjacency matrix
@@ -92,3 +94,49 @@ bool checkTopologicalSorting (const std::vector <size_t> & topologicalSorting, G
   
   return true;
 }
+
+Graph readGraphFromFile (const std::string & filename) {
+  std::ifstream inFile (filename);
+  if (! inFile) 
+    throw std::invalid_argument ("Cannot read file: " + filename);
+
+  std::vector <Edge> edges; 
+  size_t sourceNode, targetNode;
+  
+  size_t maxNoteID = 0;
+  
+  // NOTE: >> uses WHITESPACE and NEWLINE as delimiters 
+  while (inFile >> sourceNode >> targetNode) {
+    edges.push_back (Edge (sourceNode, targetNode));
+    
+    maxNoteID = std::max (maxNoteID, std::max (sourceNode, targetNode));
+    
+//     std::cout << "add edge to graph:" << std::endl
+//               << "(" << edges.back().first << ")"
+//               << " --> "
+//               << "(" << edges.back().second << ")"
+//               << std::endl;
+  }
+    
+//   std::cout << "max node-id: " << maxNoteID << std::endl;  
+    
+  inFile.close();
+  
+  return createGraphFromEdges (edges, maxNoteID);
+}
+
+Graph createGraphFromEdges (const std::vector <Edge> & edges, size_t maxNodeId) {
+  if (edges.size() < 1)
+    return Graph();
+  
+  // initialize a empty graph
+  // NOTE: a node can have id 0
+  Graph graph (maxNodeId + 1, maxNodeId + 1, 0);
+  
+  std::for_each (edges.begin(), edges.end(), [&graph](Edge e) {
+    graph(e.first, e.second) = 1;
+  });
+  
+  return graph;
+}
+

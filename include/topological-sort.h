@@ -1,7 +1,8 @@
 #include <vector>
 
 #include "matrix.h"
-typedef Matrix <float> Graph; 
+typedef Matrix <bool> Graph; 
+typedef std::pair <size_t, size_t> Edge;
 
 // Function which implements topological sorting for a directed acyclic graph (DAG)
 // in: 
@@ -20,3 +21,9 @@ bool hasDAGEdges (const Graph & dag);
 
 // Function to check, whether a given topological sorting is valid
 bool checkTopologicalSorting (const std::vector <size_t> & topologicalSorting, Graph dag);
+
+// Function to read a directed graph from a file
+Graph readGraphFromFile (const std::string & filename);
+
+// Function to create a directed graph (matrix) from a vector of given edges
+Graph createGraphFromEdges (const std::vector <Edge> & edges, size_t maxNodeId);
