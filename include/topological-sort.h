@@ -5,35 +5,47 @@
 
 #include "matrix.h"
 typedef Matrix <bool> Graph; 
-typedef std::pair <size_t, size_t> Edge;
+typedef std::pair <unsigned int, unsigned int> Edge;
 
 class GraphAdjList {
-  std::vector <std::forward_list <size_t>> _data;
+  std::vector <std::forward_list <unsigned int>> _data;
   
-  void checkBounds (size_t nodeId) const {
+  // keep track of the amount of nodes and edges
+  const unsigned int _nNodes;
+  
+  void checkBounds (unsigned int nodeId) const {
     if (nodeId >= _data.size())
       throw std::invalid_argument ("Array index out of bounds.");
   }
   
 public:
-  GraphAdjList () {
-    _data = std::vector <std::forward_list <size_t>> ();
+  GraphAdjList () 
+    : _nNodes (0)
+  {
+    _data = std::vector <std::forward_list <unsigned int>> ();
   }
   
-  GraphAdjList (const size_t nNodes) {
-    _data = std::vector <std::forward_list <size_t>> (nNodes);
+  GraphAdjList (const unsigned int nNodes) 
+    : _nNodes (nNodes)
+  {
+    _data = std::vector <std::forward_list <unsigned int>> (nNodes);
   }
   
-  std::forward_list <size_t> & operator[] (const size_t nodeId) {
+  std::forward_list <unsigned int> & operator[] (const unsigned int nodeId) {
     checkBounds (nodeId);
-    return _data[nodeId];
+    return this -> _data[nodeId];
   }
   
-  std::forward_list <size_t> operator[] (const size_t nodeId) const {
+  const std::forward_list <unsigned int> & operator[] (const unsigned int nodeId) const {
     checkBounds (nodeId);
-    return _data[nodeId];
+    return this -> _data[nodeId];
   }
   
+  std::vector <std::forward_list <unsigned int>>::iterator begin (void) { return _data.begin(); }
+  std::vector <std::forward_list <unsigned int>>::iterator end (void) { return _data.end(); }
+  
+  std::vector <std::forward_list <unsigned int>>::const_iterator begin (void) const { return _data.begin(); }
+  std::vector <std::forward_list <unsigned int>>::const_iterator end (void) const { return _data.end(); }
   
   bool containsEdge (const Edge & e) const {
     checkBounds (e.first);
@@ -66,18 +78,34 @@ public:
       _data[e.first].unique();
   }
   
-  void printGraph (std::ostream & ostream = std::cout) {
+  // Function which returns true, if no edge is in the graph
+  // time-complexity:
+  //    O(|V|)
+  // TODO: How to keep track of the amount of edges while adding and removing them?
+  bool isEmpty (void) const {
+    for (auto it = _data.begin(); it != _data.end(); ++it) {
+      if (! (it -> empty()))
+        return false;
+    }
+    return true;
+  }
+ 
+  unsigned int nNodes (void) const {
+    return _nNodes;
+  }
+  
+  void printGraph (std::ostream & ostream = std::cout) const {
     if (! ostream.good())
       throw std::invalid_argument ("Output-stream is not good.");
     
-    for (size_t sourceNodeId = 0; sourceNodeId < _data.size(); sourceNodeId++) {
+    for (unsigned int sourceNodeId = 0; sourceNodeId < (this -> nNodes()); sourceNodeId++) {
       if (_data[sourceNodeId].empty()) {
         ostream << sourceNodeId << " NULL" << std::endl;
         continue;
       }
       
-      auto adjListBgn = _data[sourceNodeId].begin();
-      auto adjListEnd = _data[sourceNodeId].end();
+      const auto adjListBgn = _data[sourceNodeId].begin();
+      const auto adjListEnd = _data[sourceNodeId].end();
       
       for (auto targetNode = adjListBgn; targetNode != adjListEnd; ++targetNode)
         ostream << sourceNodeId << " " << *targetNode << std::endl;
@@ -101,13 +129,15 @@ GraphAdjList createGraphAdjListFromEdges (const std::vector <Edge> & edges);
 // 
 // time-complexity: 
 //      O(|V|^2)
-std::vector <size_t> topologicalSort (Graph graph);
+std::vector <unsigned int> topologicalSort (Graph graph);
+
+std::vector <unsigned int> topologicalSort (GraphAdjList dag);
 
 // Function to check, whether a given vertex has an incoming edge
 //
 // time-complexity: 
 //      O(|V|)
-bool hasIncommingEdges (const Graph & dag, size_t vertex);
+bool hasIncommingEdges (const Graph & dag, unsigned int vertex);
 
 // Function to check, whether a given directed acyclic graph contains edges or not
 //
@@ -119,7 +149,9 @@ bool hasDAGEdges (const Graph & dag);
 //
 // time-complexity:
 //      O(|V|^2)
-bool checkTopologicalSorting (const std::vector <size_t> & topologicalSorting, Graph dag);
+bool checkTopologicalSorting (const std::vector <unsigned int> & topologicalSorting, Graph dag);
+
+bool checkTopologicalSorting (const std::vector <unsigned int> & topologicalSorting, const GraphAdjList & dag);
 
 // Function to read a directed edges from a file
 std::vector <Edge> readEdgesFromFile (const std::string & filename);
@@ -134,4 +166,8 @@ Graph createGraphFromEdges (const std::vector <Edge> & edges);
 //
 // time-complexity:
 //      O(|E|)
-size_t getMaxNodeId (const std::vector <Edge> edges);
+unsigned int getMaxNodeId (const std::vector <Edge> edges);
+
+// time-complexity:
+//      O(|E|)
+GraphAdjList mapFromPosIndecencyToNegIndecency (const GraphAdjList & posIndecencyGraph);

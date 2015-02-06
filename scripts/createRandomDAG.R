@@ -10,7 +10,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 nArgin <- length (args)
 if (nArgin < 1) {
-  stop ("Not enought input arguments given.")
+  stop ("Not enough input arguments given.")
   quit (status=1, save="no")
 }
 
@@ -63,13 +63,19 @@ i <- 1
 
 for (sourceNode in 1:nNodes) {
   # get a list of the target nodes reacheable from the current node
-  targetNodes <- which (graph[sourceNode, ])
+  targetNodes <- which (graph[sourceNode, ] == TRUE)
   # write all the directed edges into a file
   # NOTE: indexing should start with zero
   for (targetNode in targetNodes) {
     adjacencyList[i, ] <- c(sourceNode - 1, targetNode - 1)
     i <- i + 1
   }
+  # TODO: How to handle if the node with the highest id is a node with no incomming and outgoing edges?
+  # if a node exists, which does not have any outgoing-edge it will be stored with as: (id) --> (-1)
+#   if (length (targetNodes) == 0) {
+#     adjacencyList[i, ] <- c(sourceNode - 1, -1)
+#     i <- i + 1
+#   }
 }
 
 # write list to a file

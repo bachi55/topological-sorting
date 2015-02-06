@@ -91,3 +91,7 @@ clean :
 .PHONY: clean-measurements
 clean-measurements : 
 	$(RM) $(MEASUREMENTS_OUT)
+	
+.PHONY: todolist
+todolist:
+	@exec grep --after-context=1 --color=auto "TODO:" -r .
