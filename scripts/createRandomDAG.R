@@ -5,7 +5,8 @@ args <- commandArgs(trailingOnly = TRUE)
 ## args: read input arguments
 # [1]: amount of nodes within the graph
 # [2]: probability of having an edge between two nodes of the DAG
-# [3]: random seed
+# [3]: output file-name 
+# [4]: random seed
 
 nArgin <- length (args)
 if (nArgin < 1) {
@@ -21,15 +22,17 @@ if (nArgin > 1) {
 } else {
   epsilon       <- 0.5
 }
-# random seed
-if (nArgin > 2) {
-  set.seed      (as.numeric (args[3]))
-}
+
 # output-filename
-if (nArgin > 3) {
-  filename      <- args[4]
+if (nArgin > 2) {
+  filename      <- args[3]
 } else {
   filename      <- filename <- "~/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat"
+}
+
+# random seed
+if (nArgin > 3) {
+  set.seed      <- (as.numeric (args[4]))
 }
 
 # ## some debug output

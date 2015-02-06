@@ -95,21 +95,16 @@ bool checkTopologicalSorting (const std::vector <size_t> & topologicalSorting, G
   return true;
 }
 
-Graph readGraphFromFile (const std::string & filename) {
+std::vector <Edge> readEdgesFromFile (const std::string & filename) {
   std::ifstream inFile (filename);
   if (! inFile) 
-    throw std::invalid_argument ("Cannot read file: " + filename);
+    throw std::invalid_argument ("Cannot open file: " + filename);
 
   std::vector <Edge> edges; 
-  size_t sourceNode, targetNode;
-  
-  size_t maxNoteID = 0;
-  
+  size_t sourceNodeId, targetNodeId;
   // NOTE: >> uses WHITESPACE and NEWLINE as delimiters 
-  while (inFile >> sourceNode >> targetNode) {
-    edges.push_back (Edge (sourceNode, targetNode));
-    
-    maxNoteID = std::max (maxNoteID, std::max (sourceNode, targetNode));
+  while (inFile >> sourceNodeId >> targetNodeId) {
+    edges.push_back (Edge (sourceNodeId, targetNodeId));
     
 //     std::cout << "add edge to graph:" << std::endl
 //               << "(" << edges.back().first << ")"
@@ -118,23 +113,47 @@ Graph readGraphFromFile (const std::string & filename) {
 //               << std::endl;
   }
     
-//   std::cout << "max node-id: " << maxNoteID << std::endl;  
-    
   inFile.close();
   
-  return createGraphFromEdges (edges, maxNoteID);
+  return edges;
 }
 
-Graph createGraphFromEdges (const std::vector <Edge> & edges, size_t maxNodeId) {
+size_t getMaxNodeId (const std::vector <Edge> edges) {
+  size_t maxNodeId = 0;
+  for (auto & edge : edges)
+    maxNodeId = std::max (maxNodeId, std::max (edge.first, edge.second));
+  return maxNodeId;
+}
+
+Graph createGraphFromEdges (const std::vector <Edge> & edges) {
   if (edges.size() < 1)
     return Graph();
   
+  auto maxNodeId = getMaxNodeId (edges);
+  
   // initialize a empty graph
   // NOTE: a node can have id 0
-  Graph graph (maxNodeId + 1, maxNodeId + 1, 0);
+  Graph graph (maxNodeId + 1, maxNodeId + 1, false);
   
   std::for_each (edges.begin(), edges.end(), [&graph](Edge e) {
     graph(e.first, e.second) = 1;
+  });
+  
+  return graph;
+}
+
+GraphAdjList createGraphAdjListFromEdges (const std::vector <Edge> & edges) {
+  if (edges.size() < 1)
+    return GraphAdjList();
+  
+  auto maxNodeId = getMaxNodeId (edges);
+  
+  // initialize a empty graph
+  // NOTE: a node can have id 0
+  GraphAdjList graph (maxNodeId + 1);
+  
+  std::for_each (edges.begin(), edges.end(), [&graph](Edge e) {
+    graph.insertEdge (e, true);
   });
   
   return graph;

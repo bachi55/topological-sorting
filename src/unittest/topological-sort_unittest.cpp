@@ -18,9 +18,80 @@ void printVector (const std::vector <T> & v, const std::string & prefix = "") {
 };
 
 TEST (correctness, readGraphFromFile) {
-  auto graph = readGraphFromFile ("example-graphs/test-graph.dat");
-//   graph.printMatrix();
+  auto edges = readEdgesFromFile ("example-graphs/test-graph.dat");
+  
+  auto graphAdjMatrix = createGraphFromEdges (edges);
+//   graphAdjMatrix.printMatrix();
+  
+  auto graphAdjList = createGraphAdjListFromEdges (edges);
+//   graphAdjList.printGraph();
 }
+
+TEST (correctness, adjList_containsEdge) {
+  {
+    std::vector <Edge> edges ({Edge (0, 1)
+                            , Edge (0, 2)
+                            , Edge (1, 3)
+                            , Edge (2, 3)
+                            , Edge (1, 4)});
+    auto graphAdjList = createGraphAdjListFromEdges (edges);
+    
+    ASSERT_EQ (graphAdjList.containsEdge (Edge (1, 0)), false);
+    ASSERT_EQ (graphAdjList.containsEdge (Edge (2, 3)), true);
+    ASSERT_EQ (graphAdjList.containsEdge (Edge (0, 0)), false);
+    ASSERT_EQ (graphAdjList.containsEdge (Edge (0, 1)), true);
+    ASSERT_EQ (graphAdjList.containsEdge (Edge (0, 2)), true);
+  }
+  
+  {
+    std::vector <Edge> edges;
+    auto graphAdjList = createGraphAdjListFromEdges (edges);
+    
+    // works correctly!
+//     ASSERT_EQ (graphAdjList.containsEdge (Edge (0, 0)), false);
+    graphAdjList.printGraph();
+    
+    // works correctly!
+//     graphAdjList.insertEdge (Edge (0, 1));
+  }
+}
+  
+TEST (correctness, adjList_delete_insert_Edge) {
+  std::vector <Edge> edges ({Edge (0, 1)
+                           , Edge (0, 2)
+                           , Edge (1, 3)
+                           , Edge (2, 3)
+                           , Edge (1, 4)});
+  auto graphAdjList = createGraphAdjListFromEdges (edges);
+  
+  Edge e (0, 1);
+  ASSERT_EQ (graphAdjList.containsEdge (e), true);
+  std::cout << "delete edge: (" << e.first << ") --> (" << e.second << ")" << std::endl;
+  graphAdjList.deleteEdge (e);
+  ASSERT_EQ (graphAdjList.containsEdge (e), false);
+  
+  e = Edge (0, 1);
+  ASSERT_EQ (graphAdjList.containsEdge (e), false);
+  std::cout << "insert edge: (" << e.first << ") --> (" << e.second << ")" << std::endl;
+  graphAdjList.insertEdge (e);
+  ASSERT_EQ (graphAdjList.containsEdge (e), true);
+  
+  e = Edge (2, 4);
+  ASSERT_EQ (graphAdjList.containsEdge (e), false);
+  std::cout << "insert edge: (" << e.first << ") --> (" << e.second << ")" << std::endl;
+  graphAdjList.insertEdge (e);
+  ASSERT_EQ (graphAdjList.containsEdge (e), true);
+  
+  e = Edge (0, 1); graphAdjList.deleteEdge (e);
+  e = Edge (0, 2); graphAdjList.deleteEdge (e);
+  e = Edge (1, 3); graphAdjList.deleteEdge (e);
+  e = Edge (2, 3); graphAdjList.deleteEdge (e);
+  e = Edge (2, 4); graphAdjList.deleteEdge (e);
+  e = Edge (1, 4); graphAdjList.deleteEdge (e);
+  
+  graphAdjList.printGraph();
+}
+
 
 TEST (correctness, hasIncommingEdges) {
   {
@@ -93,8 +164,6 @@ TEST (correctness, topologicalSort) {
   // NOTE: There is topological-sort implementation in linux, which could
   //       serve as reference. Check: http://en.wikipedia.org/wiki/Tsort
   //       and 'tsort' in the terminal.
-  
-  // TODO: Read graphs from file for example
   
   {
     Graph dag;
@@ -251,15 +320,14 @@ TEST (measurements, topologicalSort) {
   
   
   // configure benchmark
-  // TODO: chose n's step width different from one: nstep += length / 10 + 1
   uint nrun = 3;
   uint minInputLength = 10;
-  uint maxInputLength = 1000; 
+  uint maxInputLength = 2500; 
   std::vector <uint> nNodesInDAG;
   for (size_t n = minInputLength; n <= maxInputLength; n += n / 10 + 1)
     nNodesInDAG.push_back (n);
   
-  std::vector <std::string> scenarioNames = {"sparse-graph", "dense-graph", "normal-graph"};
+  std::vector <std::string> scenarioNames = {"sparse-graph", "normal-graph", "dense-graph"};
   // NOTE: here it is fixed, that 'int' values are sorted
   std::vector <float> scenarios = {0.25, 0.5, 0.75};
   
@@ -292,7 +360,8 @@ TEST (measurements, topologicalSort) {
         if (system ((char *) buffer)) 
           std::cout << "something went wrong in the R script" << std::endl;
         
-        Graph dag = readGraphFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat");
+        auto edges = readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat");
+        auto dag = createGraphFromEdges (edges);
         timeDurationMeasurements.setRow (i
                                        , benchmark <timeDuration, timePoint, std::vector <size_t>, Graph> (myClock, nrun, topSortFunctions[ind], dag));
         i++;
