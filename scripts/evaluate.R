@@ -1,10 +1,12 @@
 require (ggplot2)
 
 ## compile filenames
-scenarios <- c("dense-graph", "normal-graph", "sparse-graph")
+scenarios <- c("dense-graph", "sparse-graph")
 for (sce in scenarios) {
 
-  algorithms <- c("Kahn1962")
+  algorithms <- c("Kahn1962", "Kahn1962-AdjList", "Corman-AdjList", "Kahn1962-AdjList-3")
+  algorithms <- c("Corman-AdjList", "Kahn1962-AdjList-2", "Kahn1962-AdjList-3")
+#   algorithms <- c("Kahn1962-AdjList","Kahn1962", "Kahn1962-AdjList-3", "Corman-AdjList")
   filenames <- paste ("~/Documents/algorithm-exercises/topological-sorting/measurements/"
       , paste (algorithms)
       , sep=""
@@ -34,23 +36,30 @@ for (sce in scenarios) {
   for (file in filenames.Times) {
     print (file)
     tmp <- read.table (file, header=F, comment.char="", skip=1) 
-      mean <- c(mean, c(tmp[, 5]))
-      min <- c(min, c(tmp[, 3]))
-      max <- c(max, c(tmp[, 4]))
+    mean <- c(mean, c(tmp[, 5]))
+    min <- c(min, c(tmp[, 3]))
+    max <- c(max, c(tmp[, 4]))
   }
-  x.space <- tmp[, 2]
-  nMeasurements <- nrow (tmp)
   
+  x.min <- 0
+  x.max <- 4096
+  x.space.selection <- which ((tmp[, 2] >= x.min) & (tmp[, 2] <= x.max))
+  
+  x.space <- tmp[x.space.selection, 2]
+#   nMeasurements <- nrow (tmp)
+  nMeasurements <- length (x.space.selection)
+
   cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-  df <- data.frame (cbind (rep(x.space, nAlgorithms), min, max, mean))
+  df <- data.frame (cbind (rep(x.space, nAlgorithms), min[(tmp[, 2] >= x.min) & (tmp[, 2] <= x.max)], max[(tmp[, 2] >= x.min) & (tmp[, 2] <= x.max)], mean[(tmp[, 2] >= x.min) & (tmp[, 2] <= x.max)]))
+  
   df[, 5] <- gl (nAlgorithms, nMeasurements, nAlgorithms * nMeasurements, labels=algorithmsNames)
   colnames (df) <- c("n", "min", "max", "mean", "algorithm")
 
   ggplot (df, aes (x=n, y=mean)) +
     ggtitle (sce) +	
 #     ggtitle (paste ("Quicksort (", sce, ")", sep="")) + 
-    ylim(min (min), max (max)) + xlab ("n") + ylab ("times (us)") +
+    ylim(min (min[(tmp[, 2] >= x.min) & (tmp[, 2] <= x.max)]), max (max[(tmp[, 2] >= x.min) & (tmp[, 2] <= x.max)])) + xlab ("n") + ylab ("times (us)") +
     geom_line (aes (group=algorithm, color=algorithm), alpha=0.75, size=0.3) +
     geom_ribbon (aes (ymin=min, ymax=max, color=algorithm, fill=algorithm), alpha=0.25, size=0.3) +
     scale_color_manual(values=cbPalette) + 

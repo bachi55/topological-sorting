@@ -32,7 +32,7 @@ if (nArgin > 2) {
 
 # random seed
 if (nArgin > 3) {
-  set.seed      <- (as.numeric (args[4]))
+  set.seed         (as.numeric (args[4]))
 }
 
 # ## some debug output

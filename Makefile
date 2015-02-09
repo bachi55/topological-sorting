@@ -16,9 +16,6 @@ OPTIFLAGS 	:= -O3
 DEBUGFLAGS 	:= -g
 ifeq ($(BUILD), debug)
 	CXXFLAGS += $(DEBUGFLAGS)
-else ifeq ($(BUILD), profiling)
-	CXXFLAGS += -pg -fno-inline
-	LDFLAGS  += -pg
 else
 	CXXFLAGS += $(OPTIFLAGS)
 endif
@@ -68,8 +65,15 @@ measure : CXXFLAGS += $(CXXGTESTFLAGS) -DNDEBUG
 measure : LDFLAGS  += $(LDGTESTFLAGS)
 measure : $(BINARY_TEST) | $(MEASUREMENTS_OUT)/
 	@exec $(BINARY_TEST) --gtest_filter=measurements*
+	
+.PHONY: profiling
+profiling : CXXFLAGS += -pg -fno-inline $(CXXGTESTFLAGS)
+profiling : LDFLAGS  += -pg $(LDGTESTFLAGS)
+profiling : $(BINARY_TEST)
+	@exec $(BINARY_TEST) --gtest_filter=profiling*
+	@exec gprof $(BINARY_TEST) gmon.out | less
 
-# | reffers to a 'order-only' prerequisite. It requiers make 3.80!
+# | reffers to a 'order-only' prerequisite. It requires make 3.80!
 # Source: http://www.cmcrossroads.com/article/making-directories-gnu-make?page=0%2C1
 $(BINARY_BUILD) : $(OBJECTS) $(OBJECTS_BUILD) | $(OUT)/
 	$(LD) $^ $(LDFLAGS) -o $@
