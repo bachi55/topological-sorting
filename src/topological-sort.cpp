@@ -209,6 +209,28 @@ std::vector <unsigned int> topologicalSortCormanAdjList (GraphAdjList posDag) {
   return L;
 }
 
+std::vector <unsigned int> topologicalSortCormanAdjList2 (const GraphAdjList & posDag) {
+  if (posDag.isEmpty())
+    return std::vector <unsigned int> ();
+  
+  // vector which will contain the sorted vertex-indices
+  std::vector <unsigned int> L (posDag.nNodes());
+  unsigned int nodeCounter = 0;
+  
+  std::vector <NodeColor> nodeColors (posDag.nNodes(), NodeColor::UNMARKED);
+  
+  std::iota (L.begin(), L.end(), 0);
+  std::set <unsigned int> unmarkedNodes (L.begin(), L.end());
+  
+  while (! unmarkedNodes.empty()) {
+    auto sourceNodeId = *(unmarkedNodes.rbegin());
+    visit2 (sourceNodeId, posDag, L, unmarkedNodes, nodeCounter, nodeColors);
+  }
+  
+  std::reverse (L.begin(), L.end());
+  return L;
+}
+
 // HELPER FUNCTION FOR THE SORTING ALGORITHMS
 bool hasIncommingEdges (const Graph & dag, unsigned int vertexInd) {
   for (unsigned int sourceVertexId = 0; sourceVertexId < dag.rows(); sourceVertexId++) 
@@ -248,6 +270,22 @@ void visit (const unsigned int sourceNodeId, GraphAdjList & posDag, std::vector 
     
     posDag.setNodeColor(sourceNodeId, NodeColor::PERMANENTLY_MARKED);
     L.push_back(sourceNodeId);
+    unmarkedNodes.erase (sourceNodeId);
+  }
+}
+
+void visit2 (const unsigned int sourceNodeId, const GraphAdjList & posDag, std::vector <unsigned int> & L, std::set <unsigned int> & unmarkedNodes, unsigned int & nodeCounter, std::vector <NodeColor> & nodeColors) {
+  if (nodeColors[sourceNodeId] == NodeColor::TEMPORARILY_MARKED)
+    throw std::invalid_argument ("The given graph is not (D)irected (A)cyclic (G)raph"); 
+  
+  if (nodeColors[sourceNodeId] == NodeColor::UNMARKED) {
+    nodeColors[sourceNodeId] = NodeColor::TEMPORARILY_MARKED;
+    
+    for (auto targetNodeId : posDag[sourceNodeId])
+      visit2 (targetNodeId, posDag, L, unmarkedNodes, nodeCounter, nodeColors);
+    
+    nodeColors[sourceNodeId] = NodeColor::PERMANENTLY_MARKED;
+    L[nodeCounter++] = sourceNodeId;
     unmarkedNodes.erase (sourceNodeId);
   }
 }

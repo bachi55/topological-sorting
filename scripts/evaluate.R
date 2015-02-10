@@ -4,9 +4,14 @@ require (ggplot2)
 scenarios <- c("dense-graph", "sparse-graph")
 for (sce in scenarios) {
 
-  algorithms <- c("Kahn1962", "Kahn1962-AdjList", "Corman-AdjList", "Kahn1962-AdjList-3")
-  algorithms <- c("Corman-AdjList", "Kahn1962-AdjList-2", "Kahn1962-AdjList-3")
-#   algorithms <- c("Kahn1962-AdjList","Kahn1962", "Kahn1962-AdjList-3", "Corman-AdjList")
+  # plot1a/b
+  algorithms <- c("Corman-AdjList", "Kahn1962", "Kahn1962-AdjList")
+  # plot2a/b
+  algorithms <- c("Corman-AdjList", "Kahn1962", "Kahn1962-AdjList", "Kahn1962-AdjList-3")
+  # plot3a/b
+  algorithms <- c("Corman-AdjList", "Kahn1962-AdjList-3", "Corman-AdjList-2")
+  # plot4a/b
+  algorithms <- c("Corman-AdjList-2", "Kahn1962-AdjList-3", "Kahn1962")
   filenames <- paste ("~/Documents/algorithm-exercises/topological-sorting/measurements/"
       , paste (algorithms)
       , sep=""
@@ -42,7 +47,7 @@ for (sce in scenarios) {
   }
   
   x.min <- 0
-  x.max <- 4096
+  x.max <- 64
   x.space.selection <- which ((tmp[, 2] >= x.min) & (tmp[, 2] <= x.max))
   
   x.space <- tmp[x.space.selection, 2]

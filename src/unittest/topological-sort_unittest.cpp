@@ -590,6 +590,32 @@ TEST (correctness, topologicalSortAdjList3) {
   }
 }
 
+TEST (correctness, topologicalSortCormanAdjList2) {
+  {
+    GraphAdjList posDag;
+    
+    auto L = topologicalSortCormanAdjList2 (posDag);
+    ASSERT_EQ (checkTopologicalSorting (L, posDag), true);
+  }
+  
+  {
+    unsigned int nTests = 100;
+    srand (time(NULL));
+    
+    for (unsigned int i = 0; i < nTests; i++) {
+      std::cout << "sort random DAG " << (i + 1) << "/" << nTests << std::endl;
+      
+      auto filename = createRandomDAG (0.65, i);
+      
+      auto edges = readEdgesFromFile (filename);
+      
+      auto dagAdjList = createGraphAdjListFromEdges (edges);
+      auto L = topologicalSortCormanAdjList2 (dagAdjList);
+      ASSERT_EQ (checkTopologicalSorting (L, dagAdjList), true);
+    }
+  }
+}
+
 // TEST (correctness, topologicalSortCormanAdjList) {
 //   {
 //     GraphAdjList posDag;
@@ -627,168 +653,168 @@ TEST (correctness, topologicalSortAdjList3) {
 // }
 
 // measure implementations of topological sorting
-TEST (measurements, topologicalSortAdjMatrix) { 
-  typedef std::function <std::vector <unsigned int> (Graph)> TopologicalSortFunctionHandle;
-  
-  std::vector <TopologicalSortFunctionHandle> topSortFunctions;
-  topSortFunctions.push_back (topologicalSort);
-  
-  std::vector <std::string> topSortFunctionNames;
-  topSortFunctionNames.push_back ("Kahn1962");
-  
-  
-  // configure benchmark
-  uint nrun = 3;
-  
-  uint minInputLength = 2;
-  uint maxInputLength = 2048; 
-  std::vector <uint> nNodesInDAG;
-  for (unsigned int n = minInputLength; n <= maxInputLength; n += n / 5 + 1) {
-    nNodesInDAG.push_back (n);
-  }
-  
+// TEST (measurements, topologicalSortAdjMatrix) { 
+//   typedef std::function <std::vector <unsigned int> (Graph)> TopologicalSortFunctionHandle;
+//   
+//   std::vector <TopologicalSortFunctionHandle> topSortFunctions;
+//   topSortFunctions.push_back (topologicalSort);
+//   
+//   std::vector <std::string> topSortFunctionNames;
+//   topSortFunctionNames.push_back ("Kahn1962");
+//   
+//   
+//   // configure benchmark
+//   uint nrun = 3;
+//   
+//   uint minInputLength = 2;
+//   uint maxInputLength = 4096; 
 //   std::vector <uint> nNodesInDAG;
-//   fillWith2ndPower (1, 12, nNodesInDAG);
-  
-  std::vector <std::string> scenarioNames = {"sparse-graph", "dense-graph"};
-  // NOTE: here it is fixed, that 'int' values are sorted
-  std::vector <float> scenarios = {0.25, 0.9};
-  
-  // configure file-operations
-  const std::string resultDir = "/home/bach/Documents/algorithm-exercises/topological-sorting/measurements/";
-  
-  char temp [256];
-  std::sprintf (temp, "# %2s %10s %10s %10s %10s %15s\n", "n", "min[us]", "max[us]", "mean[us]", "sd[us]", "measurements[us]");
-  std::string headerTimes (temp);
-  
-  // run for every sorting algorithm
-  for (uint ind = 0; ind < topSortFunctions.size(); ind++) {
-    uint sceIndex = 0;
-    
-    std::printf ("topological sorting function %i/%lu\n", ind + 1, topSortFunctions.size());
-    
-    // run for every scenario
-    for (auto & sce : scenarios) {
-      
-      std::printf ("scenario %i/%lu\n", sceIndex + 1, scenarios.size());
-      
-      // create output file name
-      const std::string filename_time = resultDir + topSortFunctionNames[ind] + "-" + scenarioNames[sceIndex] + "-time";
-      if (isFileExisting (filename_time)) {
-        std::cout << "Warning:" << filename_time << " already exists. No measurements will be performed" << std::endl;
-        continue;
-      }
-      
-      // create matrices to store the measuring results
-      Matrix <timeDuration> timeDurationMeasurements (nNodesInDAG.size(), nrun, timeDuration());
-      uint i = 0;
-      
-      for (auto it = nNodesInDAG.begin(); it != nNodesInDAG.end(); ++it) {
-        // create a random DAG
-        char buffer[1024];
-//         sprintf (buffer, "Rscript scripts/createRandomDAG-moreRandom.R %i %.3f", *it, sce);
-        sprintf (buffer, "Rscript scripts/createRandomDAG.R %i %.3f", *it, sce);
-        if (system ((char *) buffer)) 
-          std::cout << "something went wrong in the R script" << std::endl;
-        
-        auto edges = readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat");
-        auto dag = createGraphFromEdges (edges);
-        timeDurationMeasurements.setRow (i
-                                       , benchmark <timeDuration, timePoint, std::vector <unsigned int>, Graph> (myClock, nrun, topSortFunctions[ind], dag));
-        i++;
-      }
-      
-      // write out measurements
-      writeMeasurements <timeDuration> (filename_time, headerTimes, nNodesInDAG, timeDurationMeasurements);
-      
-      sceIndex++;
-    }
-  }
-}
+//   for (unsigned int n = minInputLength; n <= maxInputLength; n += n / 5 + 1) {
+//     nNodesInDAG.push_back (n);
+//   }
+//   
+// //   std::vector <uint> nNodesInDAG;
+// //   fillWith2ndPower (1, 12, nNodesInDAG);
+//   
+//   std::vector <std::string> scenarioNames = {"sparse-graph", "dense-graph"};
+//   // NOTE: here it is fixed, that 'int' values are sorted
+//   std::vector <float> scenarios = {0.25, 0.9};
+//   
+//   // configure file-operations
+//   const std::string resultDir = "/home/bach/Documents/algorithm-exercises/topological-sorting/measurements/";
+//   
+//   char temp [256];
+//   std::sprintf (temp, "# %2s %10s %10s %10s %10s %15s\n", "n", "min[us]", "max[us]", "mean[us]", "sd[us]", "measurements[us]");
+//   std::string headerTimes (temp);
+//   
+//   // run for every sorting algorithm
+//   for (uint ind = 0; ind < topSortFunctions.size(); ind++) {
+//     uint sceIndex = 0;
+//     
+//     std::printf ("topological sorting function %i/%lu\n", ind + 1, topSortFunctions.size());
+//     
+//     // run for every scenario
+//     for (auto & sce : scenarios) {
+//       
+//       std::printf ("scenario %i/%lu\n", sceIndex + 1, scenarios.size());
+//       
+//       // create output file name
+//       const std::string filename_time = resultDir + topSortFunctionNames[ind] + "-" + scenarioNames[sceIndex] + "-time";
+//       if (isFileExisting (filename_time)) {
+//         std::cout << "Warning:" << filename_time << " already exists. No measurements will be performed" << std::endl;
+//         continue;
+//       }
+//       
+//       // create matrices to store the measuring results
+//       Matrix <timeDuration> timeDurationMeasurements (nNodesInDAG.size(), nrun, timeDuration());
+//       uint i = 0;
+//       
+//       for (auto it = nNodesInDAG.begin(); it != nNodesInDAG.end(); ++it) {
+//         // create a random DAG
+//         char buffer[1024];
+// //         sprintf (buffer, "Rscript scripts/createRandomDAG-moreRandom.R %i %.3f", *it, sce);
+//         sprintf (buffer, "Rscript scripts/createRandomDAG.R %i %.3f", *it, sce);
+//         if (system ((char *) buffer)) 
+//           std::cout << "something went wrong in the R script" << std::endl;
+//         
+//         auto edges = readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat");
+//         auto dag = createGraphFromEdges (edges);
+//         timeDurationMeasurements.setRow (i
+//                                        , benchmark <timeDuration, timePoint, std::vector <unsigned int>, Graph> (myClock, nrun, topSortFunctions[ind], dag));
+//         i++;
+//       }
+//       
+//       // write out measurements
+//       writeMeasurements <timeDuration> (filename_time, headerTimes, nNodesInDAG, timeDurationMeasurements);
+//       
+//       sceIndex++;
+//     }
+//   }
+// }
 
-// measure implementations of topological sorting
-TEST (measurements, topologicalSortAdjList){ 
-  typedef std::function <std::vector <unsigned int> (GraphAdjList, GraphAdjList)> TopologicalSortFunctionHandle;
-  
-  std::vector <TopologicalSortFunctionHandle> topSortFunctions;
+// // measure implementations of topological sorting
+// TEST (measurements, topologicalSortAdjList){ 
+//   typedef std::function <std::vector <unsigned int> (GraphAdjList, GraphAdjList)> TopologicalSortFunctionHandle;
+//   
+//   std::vector <TopologicalSortFunctionHandle> topSortFunctions;
 //   topSortFunctions.push_back (topologicalSortAdjList);
-  topSortFunctions.push_back (topologicalSortAdjList2);
-  
-  std::vector <std::string> topSortFunctionNames;
+//   topSortFunctions.push_back (topologicalSortAdjList2);
+//   
+//   std::vector <std::string> topSortFunctionNames;
 //   topSortFunctionNames.push_back ("Kahn1962-AdjList");
-  topSortFunctionNames.push_back ("Kahn1962-AdjList-2");
-  
-  
-  // configure benchmark
-  uint nrun = 3;
-  
-  uint minInputLength = 2;
-  uint maxInputLength = 4096; 
-  std::vector <uint> nNodesInDAG;
-  for (unsigned int n = minInputLength; n <= maxInputLength; n += n / 5 + 1) {
-    nNodesInDAG.push_back (n);
-  }
-  
-  //   std::vector <uint> nNodesInDAG;
-  //   fillWith2ndPower (1, 12, nNodesInDAG);
-  
-  std::vector <std::string> scenarioNames = {"sparse-graph", "dense-graph"};
-  // NOTE: here it is fixed, that 'int' values are sorted
-  std::vector <float> scenarios = {0.25, 0.9};
-  
-  // configure file-operations
-  const std::string resultDir = "/home/bach/Documents/algorithm-exercises/topological-sorting/measurements/";
-  
-  char temp [256];
-  std::sprintf (temp, "# %2s %10s %10s %10s %10s %15s\n", "n", "min[us]", "max[us]", "mean[us]", "sd[us]", "measurements[us]");
-  std::string headerTimes (temp);
-  
-  // run for every sorting algorithm
-  for (uint ind = 0; ind < topSortFunctions.size(); ind++) {
-    uint sceIndex = 0;
-    
-    std::printf ("topological sorting function %i/%lu\n", ind + 1, topSortFunctions.size());
-    
-    // run for every scenario
-    for (auto & sce : scenarios) {
-      
-      std::printf ("scenario %i/%lu\n", sceIndex + 1, scenarios.size());
-      
-      // create output file name
-      const std::string filename_time = resultDir + topSortFunctionNames[ind] + "-" + scenarioNames[sceIndex] + "-time";
-      if (isFileExisting (filename_time)) {
-        std::cout << "Warning:" << filename_time << " already exists. No measurements will be performed" << std::endl;
-        continue;
-      }
-      
-      // create matrices to store the measuring results
-      Matrix <timeDuration> timeDurationMeasurements (nNodesInDAG.size(), nrun, timeDuration());
-      uint i = 0;
-      
-      for (auto it = nNodesInDAG.begin(); it != nNodesInDAG.end(); ++it) {
-        // create a random DAG
-        char buffer[1024];
-        sprintf (buffer, "Rscript scripts/createRandomDAG.R %i %.3f", *it, sce);
-        if (system ((char *) buffer)) 
-          std::cout << "something went wrong in the R script" << std::endl;
-        
-        std::vector <Edge> posEdges, negEdges;
-        readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat", posEdges, negEdges);
-        
-        auto posDag = createGraphAdjListFromEdges (posEdges);
-        auto negDag = createGraphAdjListFromEdges (negEdges);
-        timeDurationMeasurements.setRow (i
-        , benchmark <timeDuration, timePoint, std::vector <unsigned int>, GraphAdjList, GraphAdjList> (myClock, nrun, topSortFunctions[ind], posDag, negDag));
-        i++;
-      }
-      
-      // write out measurements
-      writeMeasurements <timeDuration> (filename_time, headerTimes, nNodesInDAG, timeDurationMeasurements);
-      
-      sceIndex++;
-    }
-  }
-}
+//   topSortFunctionNames.push_back ("Kahn1962-AdjList-2");
+//   
+//   
+//   // configure benchmark
+//   uint nrun = 3;
+//   
+//   uint minInputLength = 2;
+//   uint maxInputLength = 4096; 
+//   std::vector <uint> nNodesInDAG;
+//   for (unsigned int n = minInputLength; n <= maxInputLength; n += n / 5 + 1) {
+//     nNodesInDAG.push_back (n);
+//   }
+//   
+//   //   std::vector <uint> nNodesInDAG;
+//   //   fillWith2ndPower (1, 12, nNodesInDAG);
+//   
+//   std::vector <std::string> scenarioNames = {"sparse-graph", "dense-graph"};
+//   // NOTE: here it is fixed, that 'int' values are sorted
+//   std::vector <float> scenarios = {0.25, 0.9};
+//   
+//   // configure file-operations
+//   const std::string resultDir = "/home/bach/Documents/algorithm-exercises/topological-sorting/measurements/";
+//   
+//   char temp [256];
+//   std::sprintf (temp, "# %2s %10s %10s %10s %10s %15s\n", "n", "min[us]", "max[us]", "mean[us]", "sd[us]", "measurements[us]");
+//   std::string headerTimes (temp);
+//   
+//   // run for every sorting algorithm
+//   for (uint ind = 0; ind < topSortFunctions.size(); ind++) {
+//     uint sceIndex = 0;
+//     
+//     std::printf ("topological sorting function %i/%lu\n", ind + 1, topSortFunctions.size());
+//     
+//     // run for every scenario
+//     for (auto & sce : scenarios) {
+//       
+//       std::printf ("scenario %i/%lu\n", sceIndex + 1, scenarios.size());
+//       
+//       // create output file name
+//       const std::string filename_time = resultDir + topSortFunctionNames[ind] + "-" + scenarioNames[sceIndex] + "-time";
+//       if (isFileExisting (filename_time)) {
+//         std::cout << "Warning:" << filename_time << " already exists. No measurements will be performed" << std::endl;
+//         continue;
+//       }
+//       
+//       // create matrices to store the measuring results
+//       Matrix <timeDuration> timeDurationMeasurements (nNodesInDAG.size(), nrun, timeDuration());
+//       uint i = 0;
+//       
+//       for (auto it = nNodesInDAG.begin(); it != nNodesInDAG.end(); ++it) {
+//         // create a random DAG
+//         char buffer[1024];
+//         sprintf (buffer, "Rscript scripts/createRandomDAG.R %i %.3f", *it, sce);
+//         if (system ((char *) buffer)) 
+//           std::cout << "something went wrong in the R script" << std::endl;
+//         
+//         std::vector <Edge> posEdges, negEdges;
+//         readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat", posEdges, negEdges);
+//         
+//         auto posDag = createGraphAdjListFromEdges (posEdges);
+//         auto negDag = createGraphAdjListFromEdges (negEdges);
+//         timeDurationMeasurements.setRow (i
+//         , benchmark <timeDuration, timePoint, std::vector <unsigned int>, GraphAdjList, GraphAdjList> (myClock, nrun, topSortFunctions[ind], posDag, negDag));
+//         i++;
+//       }
+//       
+//       // write out measurements
+//       writeMeasurements <timeDuration> (filename_time, headerTimes, nNodesInDAG, timeDurationMeasurements);
+//       
+//       sceIndex++;
+//     }
+//   }
+// }
 
 // // measure implementations of topological sorting
 // TEST (measurements, topologicalSortAdjList3){ 
@@ -875,11 +901,14 @@ TEST (measurements, topologicalSortCormanAdjList){
   typedef std::function <std::vector <unsigned int> (GraphAdjList)> TopologicalSortFunctionHandle;
   
   std::vector <TopologicalSortFunctionHandle> topSortFunctions;
-  topSortFunctions.push_back (topologicalSortCormanAdjList);
+//   topSortFunctions.push_back (topologicalSortCormanAdjList);
+  topSortFunctions.push_back (topologicalSortCormanAdjList2);
   topSortFunctions.push_back (topologicalSortAdjList3);
   
+  
   std::vector <std::string> topSortFunctionNames;
-  topSortFunctionNames.push_back ("Corman-AdjList");
+//   topSortFunctionNames.push_back ("Corman-AdjList");
+  topSortFunctionNames.push_back ("Corman-AdjList-2");
   topSortFunctionNames.push_back ("Kahn1962-AdjList-3");
   
   
@@ -887,7 +916,7 @@ TEST (measurements, topologicalSortCormanAdjList){
   uint nrun = 3;
   
   uint minInputLength = 2;
-  uint maxInputLength = 4096; 
+  uint maxInputLength = 2048; 
   std::vector <uint> nNodesInDAG;
   for (unsigned int n = minInputLength; n <= maxInputLength; n += n / 5 + 1) {
     nNodesInDAG.push_back (n);
@@ -896,9 +925,9 @@ TEST (measurements, topologicalSortCormanAdjList){
   //   std::vector <uint> nNodesInDAG;
   //   fillWith2ndPower (1, 12, nNodesInDAG);
   
-  std::vector <std::string> scenarioNames = {"sparse-graph", "dense-graph"};
+  std::vector <std::string> scenarioNames = {"normal-graph"};
   // NOTE: here it is fixed, that 'int' values are sorted
-  std::vector <float> scenarios = {0.25, 0.9};
+  std::vector <float> scenarios = {0.65};
   
   // configure file-operations
   const std::string resultDir = "/home/bach/Documents/algorithm-exercises/topological-sorting/measurements/";
@@ -932,11 +961,11 @@ TEST (measurements, topologicalSortCormanAdjList){
       for (auto it = nNodesInDAG.begin(); it != nNodesInDAG.end(); ++it) {
         // create a random DAG
         char buffer[1024];
-        sprintf (buffer, "Rscript scripts/createRandomDAG.R %i %.3f", *it, sce);
+        sprintf (buffer, "Rscript scripts/createRandomDAG-evenMoreRandom.R %i %.3f %s %i", *it, sce, "/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph-fullrandom.dat", i);
         if (system ((char *) buffer)) 
           std::cout << "something went wrong in the R script" << std::endl;
         
-        auto edges = readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat");
+        auto edges = readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph-fullrandom.dat");
         
         auto dag = createGraphAdjListFromEdges (edges);
         timeDurationMeasurements.setRow (i

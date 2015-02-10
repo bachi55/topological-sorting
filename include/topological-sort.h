@@ -54,6 +54,8 @@ std::vector <unsigned int> topologicalSortAdjList3 (GraphAdjList dag);
 //      O(|V| + |E|)
 std::vector <unsigned int> topologicalSortCormanAdjList (GraphAdjList posDag);
 
+std::vector <unsigned int> topologicalSortCormanAdjList2 (const GraphAdjList & posDag);
+
 // HELPER FUNCTION FOR THE SORTING ALGORITHMS
 // Function to check, whether a given vertex has an incoming edge
 //
@@ -75,6 +77,8 @@ std::vector <unsigned int> getInDegree (const GraphAdjList & dag);
 
 // time-complexity: ?
 void visit (const unsigned int sourceNodeId, GraphAdjList & posDag, std::vector<unsigned int> & L, std::set <unsigned int> & unmarkedNodes);
+
+void visit2 (const unsigned int sourceNodeId, const GraphAdjList & posDag, std::vector <unsigned int> & L, std::set <unsigned int> & unmarkedNodes, unsigned int & nodeCounter, std::vector <NodeColor> & nodeColors);
 
 // FUNCTIONS TO CHECK A GIVEN TOPOLOGICAL SORTING FOR CORRECTNESS
 // Function to check, whether a given topological sorting is valid
