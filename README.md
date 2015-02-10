@@ -9,10 +9,11 @@ Description:
 
 Algorithms:
 -----------
-  The following two algorithms have been implemented (see wikipedia for pseudo-code: http://en.wikipedia.org/wiki/Topological_sorting):
-  *[Kahn1962](http://en.wikipedia.org/wiki/Topological_sorting#Algorithms) 
+  The following two algorithms have been implemented (see Wikipedia for pseudo-code: http://en.wikipedia.org/wiki/Topological_sorting):
   
-  *[Corman et al.](http://en.wikipedia.org/wiki/Topological_sorting#Algorithms)
+* [Kahn1962](http://en.wikipedia.org/wiki/Topological_sorting#Algorithms) 
+  
+* [Corman et al.](http://en.wikipedia.org/wiki/Topological_sorting#Algorithms)
  
 Evaluation:
 -----------
@@ -24,7 +25,7 @@ Evaluation:
   
 ### Profiling of Adjacency-list
   
-  Profiling revealed that the adjacency-list does have an expensive operation namely "eraseEdge". This operations performs in O(|E|) and in the Kahn1962 algorithm it is called very often. Equipped with that knowledge some improvements of Kahn1962 algorithm has been done. 
+  Profiling showed that the adjacency-list does have an expensive operation namely 'deleteEdge'. This operations performs in O(|E|) and in the Kahn1962 algorithm it is called very often. Equipped with that knowledge some improvements of Kahn1962 algorithm has been done. 
 * for the set of zero-degree nodes a stack is used
 
 * only the in-degree of every node is stored and decreased by one if an "parent" node has been deleted
@@ -44,7 +45,7 @@ Evaluation:
   
   However, matrices created like this have special structure. Maybe a "more random" adjacency-matrix would be better? Another [scripts/createRandomDAG-evenMoreRandom.R] has been implemented, which is creating random DAG by adding edges randomly and thereby keeping the DAG property. This strategy turned out to be to slow. Therefor the [scripts/createRandomDAG-moreRandom.R] has been implemented, to create a DAGs with a more complicated structure. It is exploited, that two different DAGs with edges only in one direction between those DAGs can be processed parallel. Or in other words, the sorting is not given with the node-id. 
   
-  Anyway, measurements turned out, that there is no different in the ranking of sorting algorithms using a more random test-DAG.
+  Anyway, measurements (comparison between [scripts/createRandomDAG.R] and [scripts/createRandomDAG-moreRandom.R])showed, that there is no different in the ranking of sorting algorithms using a more random test-DAG.
   
 Summary:
 --------
