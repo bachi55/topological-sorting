@@ -915,19 +915,19 @@ TEST (measurements, topologicalSortCormanAdjList){
   // configure benchmark
   uint nrun = 3;
   
-  uint minInputLength = 2;
-  uint maxInputLength = 2048; 
-  std::vector <uint> nNodesInDAG;
-  for (unsigned int n = minInputLength; n <= maxInputLength; n += n / 5 + 1) {
-    nNodesInDAG.push_back (n);
-  }
+//   uint minInputLength = 2;
+//   uint maxInputLength = 4096; 
+//   std::vector <uint> nNodesInDAG;
+//   for (unsigned int n = minInputLength; n <= maxInputLength; n += n / 5 + 1) {
+//     nNodesInDAG.push_back (n);
+//   }
   
-  //   std::vector <uint> nNodesInDAG;
-  //   fillWith2ndPower (1, 12, nNodesInDAG);
+    std::vector <uint> nNodesInDAG;
+    fillWith2ndPower (1, 12, nNodesInDAG);
   
   std::vector <std::string> scenarioNames = {"normal-graph"};
   // NOTE: here it is fixed, that 'int' values are sorted
-  std::vector <float> scenarios = {0.65};
+  std::vector <float> scenarios = {0.50};
   
   // configure file-operations
   const std::string resultDir = "/home/bach/Documents/algorithm-exercises/topological-sorting/measurements/";
@@ -961,11 +961,11 @@ TEST (measurements, topologicalSortCormanAdjList){
       for (auto it = nNodesInDAG.begin(); it != nNodesInDAG.end(); ++it) {
         // create a random DAG
         char buffer[1024];
-        sprintf (buffer, "Rscript scripts/createRandomDAG-evenMoreRandom.R %i %.3f %s %i", *it, sce, "/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph-fullrandom.dat", i);
+        sprintf (buffer, "Rscript scripts/createRandomDAG.R %i %.3f", *it, sce);
         if (system ((char *) buffer)) 
           std::cout << "something went wrong in the R script" << std::endl;
         
-        auto edges = readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph-fullrandom.dat");
+        auto edges = readEdgesFromFile ("/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/benchmark-graph.dat");
         
         auto dag = createGraphAdjListFromEdges (edges);
         timeDurationMeasurements.setRow (i
