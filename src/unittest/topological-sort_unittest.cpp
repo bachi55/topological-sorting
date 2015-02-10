@@ -404,136 +404,136 @@ TEST (correctness, checkTopologicalSorting) {
 }
 
 // test different sorting implementations
-// TEST (correctness, topologicalSortAdjMatrix) {
-//   // NOTE: There is topological-sort implementation in linux, which could
-//   //       serve as reference. Check: http://en.wikipedia.org/wiki/Tsort
-//   //       and 'tsort' in the terminal.
-//   
-//   {
-//     Graph dag;
-//     
-//     auto L = topologicalSort (dag);
-//     ASSERT_EQ (checkTopologicalSorting (L, dag), true);
-//   }
-//   
-//   {
-//     Graph dag (2, 2, {
-//       0, 1,
-//       0, 0
-//     });
-//     
-//     auto L = topologicalSort (dag);
-//     ASSERT_EQ (checkTopologicalSorting (L, dag), true);
-//   }
-//   
-//   {
-//     Graph dag (2, 2, {
-//       0, 0,
-//       1, 0
-//     });
-//     
-//     auto L = topologicalSort (dag);
-//     ASSERT_EQ (checkTopologicalSorting (L, dag), true);
-//   }
-//   
-//   {
-//     Graph dag (3, 3, {
-//       0, 1, 1,
-//       0, 0, 1,
-//       0, 0, 0
-//     });
-//     
-//     auto L = topologicalSort (dag);
-//     ASSERT_EQ (checkTopologicalSorting (L, dag), true);
-//   }
-//   
-//   {
-//     // NOTE: This graph comes from: http://en.wikipedia.org/wiki/Topological_sorting
-//     Graph dag (11, 11, {
-//       //  1  2  3  4  5  6  7  8  9 10 11
-//       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 1 * 
-//       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 2 * 
-//       0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, // 3
-//       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 4 * 
-//       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 5
-//       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 6 *
-//       0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, // 7
-//       0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, // 8 
-//       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 9 *
-//       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 10 *
-//       0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0  // 11
-//     });
-//     
-//     auto L = topologicalSort (dag);
-//     ASSERT_EQ (checkTopologicalSorting (L, dag), true);
-//   }
-//   
-//   {
-//     Graph dag (4, 4, {
-//       0, 1, 1, 1,
-//       0, 0, 1, 0,
-//       0, 0, 0, 1,
-//       0, 0, 0, 0
-//     });
-//     
-//     auto L = topologicalSort (dag);
-//     ASSERT_EQ (checkTopologicalSorting (L, dag), true);
-//   }
-//   
-//   {
-//     std::string filename = "/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/test-graph.dat";
-//     
-//     for (unsigned int i = 0; i < 5; i++) {
-//       std::cout << "sort random DAG " << (i + 1) << "/5" << std::endl;
-//       // create a random DAG
-//       char buffer[2048];
-//       sprintf (buffer
-//       , "Rscript scripts/createRandomDAG.R 200 0.6 %s %i"
-//       , filename.c_str()
-//       , i);
-//       if (system ((char *) buffer)) 
-//         std::cout << "something went wrong in the R script" << std::endl;
-//       
-//       Graph dag = createGraphFromEdges (readEdgesFromFile (filename));
-//       ASSERT_EQ (checkTopologicalSorting (topologicalSort (dag), dag), true);
-//     }
-//   }
-//   
-// }
+TEST (correctness, topologicalSortAdjMatrix) {
+  // NOTE: There is topological-sort implementation in linux, which could
+  //       serve as reference. Check: http://en.wikipedia.org/wiki/Tsort
+  //       and 'tsort' in the terminal.
+  
+  {
+    Graph dag;
+    
+    auto L = topologicalSort (dag);
+    ASSERT_EQ (checkTopologicalSorting (L, dag), true);
+  }
+  
+  {
+    Graph dag (2, 2, {
+      0, 1,
+      0, 0
+    });
+    
+    auto L = topologicalSort (dag);
+    ASSERT_EQ (checkTopologicalSorting (L, dag), true);
+  }
+  
+  {
+    Graph dag (2, 2, {
+      0, 0,
+      1, 0
+    });
+    
+    auto L = topologicalSort (dag);
+    ASSERT_EQ (checkTopologicalSorting (L, dag), true);
+  }
+  
+  {
+    Graph dag (3, 3, {
+      0, 1, 1,
+      0, 0, 1,
+      0, 0, 0
+    });
+    
+    auto L = topologicalSort (dag);
+    ASSERT_EQ (checkTopologicalSorting (L, dag), true);
+  }
+  
+  {
+    // NOTE: This graph comes from: http://en.wikipedia.org/wiki/Topological_sorting
+    Graph dag (11, 11, {
+      //  1  2  3  4  5  6  7  8  9 10 11
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 1 * 
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 2 * 
+      0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, // 3
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 4 * 
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 5
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 6 *
+      0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, // 7
+      0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, // 8 
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 9 *
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 10 *
+      0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0  // 11
+    });
+    
+    auto L = topologicalSort (dag);
+    ASSERT_EQ (checkTopologicalSorting (L, dag), true);
+  }
+  
+  {
+    Graph dag (4, 4, {
+      0, 1, 1, 1,
+      0, 0, 1, 0,
+      0, 0, 0, 1,
+      0, 0, 0, 0
+    });
+    
+    auto L = topologicalSort (dag);
+    ASSERT_EQ (checkTopologicalSorting (L, dag), true);
+  }
+  
+  {
+    std::string filename = "/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/test-graph.dat";
+    
+    for (unsigned int i = 0; i < 5; i++) {
+      std::cout << "sort random DAG " << (i + 1) << "/5" << std::endl;
+      // create a random DAG
+      char buffer[2048];
+      sprintf (buffer
+      , "Rscript scripts/createRandomDAG.R 200 0.6 %s %i"
+      , filename.c_str()
+      , i);
+      if (system ((char *) buffer)) 
+        std::cout << "something went wrong in the R script" << std::endl;
+      
+      Graph dag = createGraphFromEdges (readEdgesFromFile (filename));
+      ASSERT_EQ (checkTopologicalSorting (topologicalSort (dag), dag), true);
+    }
+  }
+  
+}
 
-// TEST (correctness, topologicalSortAdjList) {
-//   {
-//     GraphAdjList posDag;
-//     
-//     auto L = topologicalSortAdjList (posDag, posDag);
-//     ASSERT_EQ (checkTopologicalSorting (L, posDag), true);
-//   }
-//   
-//   {
-//     std::string filename = "/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/test-graph.dat";
-//     
-//     for (unsigned int i = 0; i < 20; i++) {
-//       std::cout << "sort random DAG " << (i + 1) << "/20" << std::endl;
-//       // create a random DAG
-//       char buffer[2048];
-//       sprintf (buffer
-//       , "Rscript scripts/createRandomDAG.R 100 0.5 %s %i"
-//       , filename.c_str()
-//       , i);
-//       if (system ((char *) buffer)) 
-//         std::cout << "something went wrong in the R script" << std::endl;
-//       
-//       std::vector <Edge> posEdges, negEdges;
-//       readEdgesFromFile (filename, posEdges, negEdges);
-//       
-//       auto posDagAdjList = createGraphAdjListFromEdges (posEdges);
-//       auto negDagAdjList = createGraphAdjListFromEdges (negEdges);
-//       auto L = topologicalSortAdjList (posDagAdjList, negDagAdjList);
-//       ASSERT_EQ (checkTopologicalSorting (L, posDagAdjList), true);
-//       printVector <unsigned int> (L);
-//     }
-//   }
-// }
+TEST (correctness, topologicalSortAdjList) {
+  {
+    GraphAdjList posDag;
+    
+    auto L = topologicalSortAdjList (posDag, posDag);
+    ASSERT_EQ (checkTopologicalSorting (L, posDag), true);
+  }
+  
+  {
+    std::string filename = "/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/test-graph.dat";
+    
+    for (unsigned int i = 0; i < 20; i++) {
+      std::cout << "sort random DAG " << (i + 1) << "/20" << std::endl;
+      // create a random DAG
+      char buffer[2048];
+      sprintf (buffer
+      , "Rscript scripts/createRandomDAG.R 100 0.5 %s %i"
+      , filename.c_str()
+      , i);
+      if (system ((char *) buffer)) 
+        std::cout << "something went wrong in the R script" << std::endl;
+      
+      std::vector <Edge> posEdges, negEdges;
+      readEdgesFromFile (filename, posEdges, negEdges);
+      
+      auto posDagAdjList = createGraphAdjListFromEdges (posEdges);
+      auto negDagAdjList = createGraphAdjListFromEdges (negEdges);
+      auto L = topologicalSortAdjList (posDagAdjList, negDagAdjList);
+      ASSERT_EQ (checkTopologicalSorting (L, posDagAdjList), true);
+      printVector <unsigned int> (L);
+    }
+  }
+}
 
 // TEST (correctness, topologicalSortAdjList2) {
 //   {
@@ -585,7 +585,6 @@ TEST (correctness, topologicalSortAdjList3) {
       auto dagAdjList = createGraphAdjListFromEdges (edges);
       auto L = topologicalSortAdjList3 (dagAdjList);
       ASSERT_EQ (checkTopologicalSorting (L, dagAdjList), true);
-//       printVector <unsigned int> (L);
     }
   }
 }
@@ -616,41 +615,41 @@ TEST (correctness, topologicalSortCormanAdjList2) {
   }
 }
 
-// TEST (correctness, topologicalSortCormanAdjList) {
-//   {
-//     GraphAdjList posDag;
-//     
-//     auto L = topologicalSortCormanAdjList (posDag);
-//     ASSERT_EQ (checkTopologicalSorting (L, posDag), true);
-//   }
-//   
-//   {
-//     std::string filename = "/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/test-graph.dat";
-//     
-//     unsigned int nTests = 20;
-//     
-//     for (unsigned int i = 0; i < nTests; i++) {
-//       std::cout << "sort random DAG " << (i + 1) << "/" << nTests << std::endl;
-//       // create a random DAG
-//       char buffer[2048];
-//       sprintf (buffer
-//       , "Rscript scripts/createRandomDAG-moreRandom.R 512 0.75 %s %i"
-//       , filename.c_str()
-//       , i + 1);
-//       if (system ((char *) buffer)) 
-//         std::cout << "something went wrong in the R script" << std::endl;
-//       
-//       auto edges = readEdgesFromFile (filename);
-//       auto dagAdjList = createGraphAdjListFromEdges (edges);
-//       auto L = topologicalSortCormanAdjList (dagAdjList);      
-//       
-//       printVector <unsigned int> (L);
-//       
-//       ASSERT_EQ (checkTopologicalSorting (L, dagAdjList), true);
-//       
-//     }
-//   }
-// }
+TEST (correctness, topologicalSortCormanAdjList) {
+  {
+    GraphAdjList posDag;
+    
+    auto L = topologicalSortCormanAdjList (posDag);
+    ASSERT_EQ (checkTopologicalSorting (L, posDag), true);
+  }
+  
+  {
+    std::string filename = "/home/bach/Documents/algorithm-exercises/topological-sorting/example-graphs/test-graph.dat";
+    
+    unsigned int nTests = 20;
+    
+    for (unsigned int i = 0; i < nTests; i++) {
+      std::cout << "sort random DAG " << (i + 1) << "/" << nTests << std::endl;
+      // create a random DAG
+      char buffer[2048];
+      sprintf (buffer
+      , "Rscript scripts/createRandomDAG-moreRandom.R 512 0.75 %s %i"
+      , filename.c_str()
+      , i + 1);
+      if (system ((char *) buffer)) 
+        std::cout << "something went wrong in the R script" << std::endl;
+      
+      auto edges = readEdgesFromFile (filename);
+      auto dagAdjList = createGraphAdjListFromEdges (edges);
+      auto L = topologicalSortCormanAdjList (dagAdjList);      
+      
+      printVector <unsigned int> (L);
+      
+      ASSERT_EQ (checkTopologicalSorting (L, dagAdjList), true);
+      
+    }
+  }
+}
 
 // measure implementations of topological sorting
 // TEST (measurements, topologicalSortAdjMatrix) { 
