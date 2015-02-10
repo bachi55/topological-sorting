@@ -10,18 +10,18 @@ Description:
 Algorithms:
 -----------
   The following two algorithms have been implemented (see wikipedia for pseudo-code: http://en.wikipedia.org/wiki/Topological_sorting):
-    (1) Kahn1962
-    (2) Corman et al. 
+  *[Kahn1962](http://en.wikipedia.org/wiki/Topological_sorting#Algorithms) 
+  *[Corman et al.](http://en.wikipedia.org/wiki/Topological_sorting#Algorithms)
  
 Evaluation:
 -----------
-  1) Adjacency-matrix vs Adjacency-list
+  ### Adjacency-matrix vs Adjacency-list
   
   Both algorithms have been successive improved. First a adjacency matrix was chosen to represent the graph. It turned out, that for this representation some needed operations does "cost a lot". Therefore in a second step a adjacency list has been implemented. Both representations have been evaluated first on the Kahn1962 algorithm. Benchmarks revealed, that using a adjacency list, does not perform better than the algorithm using matrices. See [measurements/plot1a and plot1b] for details. Note that in the plot also the "naive" Corman implementation is given, which served as an reference. 
   
   Sparse graphs does contain just a small amount of edges and dense ones are close to complete.
   
-  2) Profiling of Adjacency-list
+  ### Profiling of Adjacency-list
   
   Profiling revealed that the adjacency-list does have an expensive operation namely "eraseEdge". This operations performs in O(|E|) and in the Kahn1962 algorithm it is called very often. Equipped with that knowledge some improvements of Kahn1962 algorithm has been done. 
     (1) for the set of zero-degree nodes a stack is used
@@ -48,4 +48,6 @@ Summary:
 --------
   The Kahn1962 algorithm could be improved and is close to be as fast as the Corman et al. is. Both algorithms can be bounded by O(|V| + |E|). Since the amount of edges |E| is bounded by O((|V^2| - |V|) / 2) the [measurements/plot3a and plot3b] looking a bit non-linear, which comes from the non-linear increase of the amount of edges. 
   
-  Further investigations could check the memory consumption of the two algorithms. Furthermore it would be interesting to check the memory-efficiency (cache-efficiency considering the cache-misses) of the adjacency-list. Last but not least, there are more algorithms to solve the sorting, which should be implemented next.
+  Further investigations could check the memory consumption of the two algorithms. For example a big drawback of the Kahn1962 is, that it needs to make a copy the adjacency list, since otherwise it would modify the data. Also comparing the efficiency of the adjacency-LIST and an adjacency-HASHTable could be interesting.
+  
+  Topological sorting can be improved very much by changing the underlying data-structure. 

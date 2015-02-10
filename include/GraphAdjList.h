@@ -1,6 +1,10 @@
 #include <forward_list>
 #include <vector>
 
+// use hashes instead of lists, associative array
+
+// 25.2, 11:30Uhr 
+
 #include "matrix.h"
 typedef Matrix <bool> Graph; 
 typedef std::pair <unsigned int, unsigned int> Edge;
